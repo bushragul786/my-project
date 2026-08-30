@@ -3,6 +3,10 @@ import Home from "./Components/Pages/Home"
 import Signup from "./Components/Pages/Signup";
 import MyNavbar from "./Components/Pages/Navbar";
 import Login from "./Components/Pages/Login";
+import CustomerDashboard from "./Components/Pages/CustomerDashboard";
+import CreateTicket from "./Components/Pages/CreateTicket";
+import MyTickets from "./Components/Pages/MyTickets";
+import TicketDetails from "./Components/Pages/TicketDetails";
 import { ToastContainer } from 'react-toastify';
 
 const App = () => {
@@ -15,10 +19,23 @@ const App = () => {
         <Route path="/login" element={<Login />} />
 
         <Route path="/signup" element={<Signup />} />
+      <Route
+  path="/customer"
+  element={<CustomerDashboard />}
+/>
 
-        {/* <Route path="/Projects" element={<Projects />} /> */}
-        
-         {/* <Route path="/addProject" element={<AddProject />} /> */}
+<Route
+  path="/customer/create-ticket"
+  element={<CreateTicket />}
+/>
+<Route
+  path="/customer/tickets"
+  element={<MyTickets />}
+/>
+<Route
+  path="/customer/tickets/:id"
+  element={<TicketDetails />}
+/>
 
 
       </Routes>

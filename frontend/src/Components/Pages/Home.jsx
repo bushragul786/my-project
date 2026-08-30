@@ -21,6 +21,7 @@ const Home = () => {
           WELCOME TO HOME PAGE
         </h1>
 
+        {/* Login */}
         <Button
           variant="primary"
           className="me-3 mt-5"
@@ -29,6 +30,7 @@ const Home = () => {
           Login
         </Button>
 
+        {/* Signup */}
         <Button
           variant="success"
           className="me-3 mt-5"
@@ -37,12 +39,22 @@ const Home = () => {
           Signup
         </Button>
 
+        {/* Customer Dashboard */}
         <Button
-          variant="success"
+          variant="warning"
           className="me-3 mt-5"
-          onClick={() => navigate("/projects")}
+          onClick={() => navigate("/customer")}
         >
-          Projects
+          Customer Dashboard
+        </Button>
+
+        {/* Create Ticket */}
+        <Button
+          variant="info"
+          className="me-3 mt-5"
+          onClick={() => navigate("/customer/create-ticket")}
+        >
+          Create Ticket
         </Button>
 
       </Container>

@@ -29,7 +29,7 @@ const loginHandler = async(e)=>{
 
     toast.success("login successfully!");
 
-    navigate("/projects");
+    navigate("/customer");
 
     }catch (error) {
     console.log(error);

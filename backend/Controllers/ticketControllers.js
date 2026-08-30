@@ -1,13 +1,14 @@
 import Ticket from "../Models/Ticket.js";
 
-
-// CREATE  POST  DATA
+// ===============================
+// CREATE TICKET
+// POST /api/tickets
+// ===============================
 
 export const createTicket = async (req, res) => {
   try {
     const { subject, description, category } = req.body;
 
-    // Validation
     if (!subject || !description) {
       return res.status(400).json({
         success: false,
@@ -15,7 +16,6 @@ export const createTicket = async (req, res) => {
       });
     }
 
-    // Generate unique ticket number
     const ticketNumber = `TKT-${Date.now()}`;
 
     const ticket = await Ticket.create({
@@ -39,7 +39,12 @@ export const createTicket = async (req, res) => {
     });
   }
 };
-    // GET  READ DATA
+
+
+// ===============================
+// GET MY TICKETS
+// GET /api/tickets/my-tickets
+// ===============================
 
 export const getMyTickets = async (req, res) => {
   try {
@@ -60,10 +65,53 @@ export const getMyTickets = async (req, res) => {
   }
 };
 
+
+// ===============================
+// GET SINGLE TICKET
+// GET /api/tickets/:id
+// ===============================
+
+export const getTicketById = async (req, res) => {
+  try {
+    const ticket = await Ticket.findOne({
+      _id: req.params.id,
+      customer: req.user._id,
+    });
+
+    if (!ticket) {
+      return res.status(404).json({
+        success: false,
+        message: "Ticket not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: ticket,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+// ===============================
 // UPDATE TICKET
+// PUT /api/tickets/:id
+// ===============================
+
 export const updateTicket = async (req, res) => {
   try {
-    const { status, priority, category, resolutionNote } = req.body;
+    const {
+      status,
+      priority,
+      category,
+      resolutionNote
+    } = req.body;
 
     const ticket = await Ticket.findById(req.params.id);
 
@@ -74,7 +122,7 @@ export const updateTicket = async (req, res) => {
       });
     }
 
-    // Only assigned agent can update the ticket
+    // Only assigned agent can update
     if (
       req.user.role === "agent" &&
       ticket.agent &&
@@ -87,7 +135,10 @@ export const updateTicket = async (req, res) => {
     }
 
     // Resolved ticket cannot be changed normally
-    if (ticket.status === "Resolved" && status !== "Resolved") {
+    if (
+      ticket.status === "Resolved" &&
+      status !== "Resolved"
+    ) {
       return res.status(400).json({
         success: false,
         message: "Resolved ticket cannot be changed unless reopened",
