@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
      
 export const signup = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password} = req.body;
 
     const existingUser = await User.findOne({ email })
 
@@ -23,10 +23,12 @@ const hashedPassword = await bcrypt.hash(password,10);
 
 
 // new User
+
 const newUser = await User.create({
-    username,
-    email,
-    password:hashedPassword,
+  username,
+  email,
+  password: hashedPassword,
+  role: "customer",
 });
 
 
@@ -64,7 +66,7 @@ export const login = async (req, res) => {
       user.password
     );
 
-    if (!isMatch) {
+    if (!isMatch) {  
       return res.status(400).json({
         success: false,
         message: "Invalid password",
@@ -72,20 +74,24 @@ export const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+  {
+    id: user._id,
+    role: user.role,
+  },
+  process.env.JWT_SECRET,
+  { expiresIn: "7d" }
+);
 
     res.status(200).json({
       success: true,
       message: "Login successful",
       token,
       data: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-      },
+  id: user._id,
+  username: user.username,
+  email: user.email,
+  role: user.role,
+},
     });
 
   } catch (error) {
