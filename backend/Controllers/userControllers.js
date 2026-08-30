@@ -1,5 +1,5 @@
 import User from "../Models/User.js";
-import brcypt from "bcrypt";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 // Signup
@@ -9,7 +9,7 @@ export const signup = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email })
 
     if (existingUser) {
       return res.status(400).json({
@@ -19,7 +19,7 @@ export const signup = async (req, res) => {
     }
 //  hashed password
 
-const hashedPassword = await brcypt.hash(password,10);
+const hashedPassword = await bcrypt.hash(password,10);
 
 
 // new User
