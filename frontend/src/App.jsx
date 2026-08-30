@@ -7,6 +7,7 @@ import CustomerDashboard from "./Components/Pages/CustomerDashboard";
 import CreateTicket from "./Components/Pages/CreateTicket";
 import MyTickets from "./Components/Pages/MyTickets";
 import TicketDetails from "./Components/Pages/TicketDetails";
+import EditTicket from "./Components/Pages/EditTicket";
 import { ToastContainer } from 'react-toastify';
 
 const App = () => {
@@ -35,6 +36,11 @@ const App = () => {
 <Route
   path="/customer/tickets/:id"
   element={<TicketDetails />}
+/>
+
+<Route
+  path="/customer/tickets/:id/edit"
+  element={<EditTicket />}
 />
 
 

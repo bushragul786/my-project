@@ -107,13 +107,16 @@ export const getTicketById = async (req, res) => {
 export const updateTicket = async (req, res) => {
   try {
     const {
-      status,
-      priority,
+      subject,
+      description,
       category,
-      resolutionNote
+      priority,
     } = req.body;
 
-    const ticket = await Ticket.findById(req.params.id);
+    const ticket = await Ticket.findOne({
+      _id: req.params.id,
+      customer: req.user._id,
+    });
 
     if (!ticket) {
       return res.status(404).json({
@@ -122,41 +125,29 @@ export const updateTicket = async (req, res) => {
       });
     }
 
-    // Only assigned agent can update
-    if (
-      req.user.role === "agent" &&
-      ticket.agent &&
-      ticket.agent.toString() !== req.user._id.toString()
-    ) {
-      return res.status(403).json({
-        success: false,
-        message: "You can only update tickets assigned to you",
-      });
-    }
-
-    // Resolved ticket cannot be changed normally
-    if (
-      ticket.status === "Resolved" &&
-      status !== "Resolved"
-    ) {
+    // Resolved ticket cannot be edited
+    if (ticket.status === "Resolved") {
       return res.status(400).json({
         success: false,
-        message: "Resolved ticket cannot be changed unless reopened",
+        message: "Resolved ticket cannot be edited",
       });
     }
 
-    // Resolution note required
-    if (status === "Resolved" && !resolutionNote) {
-      return res.status(400).json({
-        success: false,
-        message: "Resolution note is required",
-      });
+    if (subject) {
+      ticket.subject = subject;
     }
 
-    if (status) ticket.status = status;
-    if (priority) ticket.priority = priority;
-    if (category) ticket.category = category;
-    if (resolutionNote) ticket.resolutionNote = resolutionNote;
+    if (description) {
+      ticket.description = description;
+    }
+
+    if (category) {
+      ticket.category = category;
+    }
+
+    if (priority) {
+      ticket.priority = priority;
+    }
 
     const updatedTicket = await ticket.save();
 
@@ -167,6 +158,49 @@ export const updateTicket = async (req, res) => {
     });
 
   } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+// ===============================
+// DELETE TICKET
+// DELETE /api/tickets/:id
+// ===============================
+export const deleteTicket = async (req, res) => {
+  try {
+    const ticket = await Ticket.findOne({
+      _id: req.params.id,
+      customer: req.user._id,
+    });
+
+    if (!ticket) {
+      return res.status(404).json({
+        success: false,
+        message: "Ticket not found",
+      });
+    }
+
+    if (ticket.status === "Resolved") {
+      return res.status(400).json({
+        success: false,
+        message: "Resolved ticket cannot be deleted",
+      });
+    }
+
+    await Ticket.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      message: "Ticket deleted successfully",
+    });
+
+  } catch (error) {
+    console.log("DELETE ERROR:", error);
+
     res.status(500).json({
       success: false,
       message: error.message,

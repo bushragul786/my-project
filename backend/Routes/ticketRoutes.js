@@ -4,7 +4,8 @@ import {
   createTicket,
   getMyTickets,
   getTicketById,
-  updateTicket
+  updateTicket, 
+   deleteTicket
 } from "../Controllers/ticketControllers.js";
 
 import { protect } from "../Middleware/authMiddleware.js";
@@ -27,5 +28,7 @@ router.get("/:id", protect, getTicketById);
 // UPDATE TICKET
 router.put("/:id", protect, updateTicket);
 
+// DELETE TICKET
+router.delete("/:id", protect, deleteTicket);
 
 export default router;
