@@ -22,12 +22,6 @@ app.get("/", (req, res) => {
   res.send("Server is running...");
 });
 
-app.post("/fsd", (req, res) => {
-  console.log('hellloo');
-  
-});
-
-
 
 
 app.listen(PORT, () => {

@@ -23,13 +23,19 @@ const loginHandler = async(e)=>{
         )
         
     localStorage.setItem("token", response.data.token);
-    localStorage.setItem("username", response.data.data.username);
-    localStorage.setItem("email", response.data.data.email); 
-    console.log(localStorage.getItem("token"))
+localStorage.setItem("username", response.data.data.username);
+localStorage.setItem("email", response.data.data.email);
+localStorage.setItem("role", response.data.data.role);
 
-    toast.success("login successfully!");
+console.log("Role:", response.data.data.role);
 
-    navigate("/customer");
+toast.success("Login successfully!");
+
+if (response.data.data.role === "agent") {
+  window.location.href = "/agent/dashboard";
+} else {
+  window.location.href = "/customer";
+}
 
     }catch (error) {
     console.log(error);

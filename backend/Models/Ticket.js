@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// TICKET
 const ticketSchema = new mongoose.Schema(
   {
     ticketNumber: {
@@ -9,7 +10,7 @@ const ticketSchema = new mongoose.Schema(
     },
 
     customer: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -75,6 +76,28 @@ const ticketSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+
+    // MESSAGES
+    messages: [
+      {
+        sender: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+
+        message: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

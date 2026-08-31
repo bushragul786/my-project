@@ -207,3 +207,271 @@ export const deleteTicket = async (req, res) => {
     });
   }
 };
+
+
+
+
+
+
+
+
+
+// ===============================
+// GET ALL AGENT TICKETS
+// GET /api/tickets/agent
+// ===============================
+
+export const getAgentTickets = async (req, res) => {
+  try {
+    const tickets = await Ticket.find({
+      $or: [
+        { agent: req.user._id },
+        { status: "New" },
+      ],
+    })
+      .populate("customer", "username email")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: tickets,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+// ===============================
+// GET AGENT TICKET BY ID
+// GET /api/tickets/agent/:id
+// ===============================
+
+export const getAgentTicketById = async (req, res) => {
+  try {
+    const ticket = await Ticket.findOne({
+      _id: req.params.id,
+      $or: [
+        { agent: req.user._id },
+        { status: "New" },
+      ],
+    })
+      .populate("customer", "username email")
+      .populate("agent", "username email")
+      .populate("messages.sender", "username role");
+
+    if (!ticket) {
+      return res.status(404).json({
+        success: false,
+        message: "Ticket not found or not assigned to you",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: ticket,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+// ===============================
+// UPDATE AGENT TICKET
+// PUT /api/tickets/agent/:id
+// ===============================
+
+export const updateAgentTicket = async (req, res) => {
+  try {
+    const {
+      status,
+      priority,
+      category,
+      resolutionNote,
+    } = req.body;
+
+    const ticket = await Ticket.findOne({
+      _id: req.params.id,
+      $or: [
+        { agent: req.user._id },
+        { status: "New" },
+      ],
+    });
+
+    if (!ticket) {
+      return res.status(404).json({
+        success: false,
+        message: "Ticket not found or not assigned to you",
+      });
+    }
+
+    // Resolved ticket cannot normally be changed
+  if (ticket.status === "Resolved") {
+  return res.status(400).json({
+    success: false,
+    message: "Resolved ticket cannot be changed",
+  });
+}
+
+    if (status) {
+      if (
+        !["New", "Assigned", "In Progress", "Resolved"].includes(status)
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid ticket status",
+        });
+      }
+
+      // Resolution requires a note
+      if (status === "Resolved") {
+        const note = resolutionNote || ticket.resolutionNote;
+
+        if (!note || !note.trim()) {
+          return res.status(400).json({
+            success: false,
+            message: "Resolution note is required",
+          });
+        }
+
+        ticket.resolutionNote = note;
+      }
+
+      ticket.status = status;
+    }
+
+    if (priority) {
+      if (!["Low", "Medium", "High"].includes(priority)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid priority",
+        });
+      }
+
+      ticket.priority = priority;
+    }
+
+    if (category) {
+      if (
+        !["Billing", "Technical", "Account", "Order", "Other"].includes(category)
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid category",
+        });
+      }
+
+      ticket.category = category;
+    }
+
+    if (resolutionNote) {
+      ticket.resolutionNote = resolutionNote;
+    }
+
+    // Automatically assign a New ticket to this agent
+    if (!ticket.agent) {
+      ticket.agent = req.user._id;
+
+      if (ticket.status === "New") {
+        ticket.status = "Assigned";
+      }
+    }
+await ticket.save();
+
+const updatedTicket = await Ticket.findById(ticket._id)
+  .populate("customer", "username email")
+  .populate("agent", "username email")
+  .populate("messages.sender", "username role");
+
+res.status(200).json({
+  success: true,
+  message: "Ticket updated successfully",
+  data: updatedTicket,
+});
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+// ===============================
+// ADD MESSAGE
+// POST /api/tickets/:id/messages
+// ===============================
+
+export const addMessage = async (req, res) => {
+  try {
+    const { message } = req.body;
+
+    if (!message || !message.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Message is required",
+      });
+    }
+
+    const ticket = await Ticket.findOne({
+      _id: req.params.id,
+      $or: [
+        { customer: req.user._id },
+        { agent: req.user._id },
+        { status: "New" },
+      ],
+    });
+
+    if (!ticket) {
+      return res.status(404).json({
+        success: false,
+        message: "Ticket not found",
+      });
+    }
+
+    if (ticket.status === "Resolved") {
+      return res.status(400).json({
+        success: false,
+        message: "Resolved ticket cannot receive new messages",
+      });
+    }
+
+    ticket.messages.push({
+      sender: req.user._id,
+      message: message.trim(),
+    });
+
+    // If agent replies to a New ticket, assign it
+    if (
+      req.user.role === "agent" &&
+      !ticket.agent
+    ) {
+      ticket.agent = req.user._id;
+      ticket.status = "In Progress";
+    }
+
+    const updatedTicket = await ticket.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Message sent successfully",
+      data: updatedTicket,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
