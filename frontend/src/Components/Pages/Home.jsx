@@ -2,6 +2,7 @@ import { Button, Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import homeBg from "../../assets/home.avif";
 
+
 const Home = () => {
   const navigate = useNavigate();
 
@@ -56,6 +57,8 @@ const Home = () => {
         >
           Create Ticket
         </Button>
+
+        
 
       </Container>
     </div>

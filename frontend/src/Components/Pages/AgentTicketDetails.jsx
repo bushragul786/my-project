@@ -394,9 +394,11 @@ const AgentTicketDetail = () => {
 
       <div className="d-flex justify-content-between">
 
-        <strong>
-          {msg.sender?.username || "User"}
-        </strong>
+       <strong>
+  {msg.sender?.role === "agent"
+    ? "You"
+    : msg.sender?.username || "Customer"}
+</strong>
 
         <small className="text-muted">
           {msg.createdAt

@@ -17,32 +17,34 @@ const [form,setForm] = useState({
 const loginHandler = async(e)=>{
     e.preventDefault();
     try{
-        const response  = await axios.post(
-             "http://localhost:5000/api/users/login",
-             form
-        )
-        
-    localStorage.setItem("token", response.data.token);
+       const response = await axios.post(
+  "http://localhost:5000/api/users/login",
+  form
+);
+localStorage.setItem("token", response.data.token);
 localStorage.setItem("username", response.data.data.username);
 localStorage.setItem("email", response.data.data.email);
 localStorage.setItem("role", response.data.data.role);
 
-console.log("Role:", response.data.data.role);
+console.log("LOGIN ROLE:", response.data.data.role);
+toast.success("Login successful!");
 
-toast.success("Login successfully!");
-
-if (response.data.data.role === "agent") {
-  window.location.href = "/agent/dashboard";
-} else {
-  window.location.href = "/customer";
-}
-
-    }catch (error) {
-    console.log(error);
-   toast.error("Failed to login!");
+setTimeout(() => {
+  if (response.data.data.role === "agent") {
+    navigate("/agent/dashboard");
+  } else {
+    navigate("/customer");
   }
-};
+}, 1000);
 
+} catch (error) {
+  console.log(error);
+
+  toast.error(
+    error.response?.data?.message || "Failed to login!"
+  );
+}
+}
 
   return (
     // Login

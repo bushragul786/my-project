@@ -11,40 +11,56 @@ const Signup = () => {
 
 
   const [form, setForm] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  })
+  username: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+  role: "customer",
+});
 
   const signupHandler = async (e) => {
   e.preventDefault();
+  
+      console.log("SIGNUP FORM:", form);
 
   try {
-    const response = await axios.post(
-      "http://localhost:5000/api/users/signup",
-      form
-    );
-    localStorage.setItem("token",response.data.token),
-    localStorage.setItem("username", response.data.data.username);
-    localStorage.setItem("email", response.data.data.email);
+  const response = await axios.post(
+    "http://localhost:5000/api/users/signup",
+    form
+  );
 
-    console.log(response.data);
-   toast.success("Signup successfully!");
+  localStorage.setItem(
+    "username",
+    response.data.data.username
+  );
 
-        navigate("/login");
+  localStorage.setItem(
+    "email",
+    response.data.data.email
+  );
 
-  } catch (error) {
-    toast.error("Failed to Signup!");
-    console.log(error);
-  }
-};
+  console.log(response.data);
+
+  toast.success("Signup successful!");
+
+  setTimeout(() => {
+    navigate("/login");
+  }, 1000);
+
+} catch (error) {
+  console.log(error);
+
+  toast.error(
+    error.response?.data?.message || "Failed to Signup!"
+  );
+}
+}
   return (
     
                         // SIGNUP
 
-    <Container className="d-flex justify-content-center align-items-center vh-100">
-      <Card style={{ width: "25rem" }} className="p-4 shadow">
+   <Container className="d-flex justify-content-center align-items-center min-vh-100 py-4">
+     <Card style={{ width: "25rem" }} className="p-3 shadow">
         <h2 className="text-center mb-4">Signup</h2>
         <Form onSubmit={signupHandler}>
 
@@ -111,6 +127,34 @@ const Signup = () => {
       setForm({ ...form, confirmPassword: e.target.value })
     }
   />
+</Form.Group>
+
+{/* ROLE */}
+
+<Form.Group className="mb-3">
+
+  <Form.Label>Account Type</Form.Label>
+
+  <Form.Select
+    value={form.role}
+    onChange={(e) =>
+      setForm({
+        ...form,
+        role: e.target.value,
+      })
+    }
+  >
+
+    <option value="customer">
+      Customer
+    </option>
+
+    <option value="agent">
+      Agent
+    </option>
+
+  </Form.Select>
+
 </Form.Group>
 
           {/* signup button */}

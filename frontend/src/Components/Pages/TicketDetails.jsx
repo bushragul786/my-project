@@ -94,25 +94,42 @@ const TicketDetails = () => {
   // ===============================
   // SEND MESSAGE
   // ===============================
+const handleSend = async (e) => {
+  e.preventDefault();
 
-  const handleSend = (e) => {
+  if (!message.trim()) {
+    return;
+  }
 
-    e.preventDefault();
+  try {
+    const token = localStorage.getItem("token");
 
+    const response = await axios.post(
+      `http://localhost:5000/api/tickets/${id}/messages`,
+      {
+        message: message.trim(),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-    if (!message.trim()) {
-
-      return;
-    }
-
-
-    console.log("Message:", message);
-
+    setTicket(response.data.data);
 
     setMessage("");
 
-  };
+  } catch (error) {
+    console.log(error);
 
+    setError(
+      error.response?.data?.message ||
+      "Failed to send message."
+    );
+  }
+};
+ 
 
   // ===============================
   // LOADING
@@ -335,56 +352,53 @@ const TicketDetails = () => {
           <hr className="my-4" />
 
 
-          {/* CONVERSATION */}
+        {/* ORIGINAL CUSTOMER MESSAGE */}
 
-          <h5 className="mb-3">
+<Card className="bg-light mb-3">
+  <Card.Body>
+    <strong>You</strong>
 
-            Conversation
+    <p className="mb-0 mt-2">
+      {ticket.description}
+    </p>
+  </Card.Body>
+</Card>
 
-          </h5>
+{/* ACTUAL MESSAGES */}
 
+{ticket.messages && ticket.messages.length > 0 ? (
+  ticket.messages.map((msg, index) => (
+    <Card key={msg._id || index} className="mb-3">
+      <Card.Body>
 
-          <Card className="bg-light mb-3">
+        <div className="d-flex justify-content-between">
 
-            <Card.Body>
+          <strong>
+            {msg.sender?.role === "agent"
+              ? "Support Agent"
+              : "You"}
+          </strong>
 
-              <strong>
-                You
-              </strong>
+          <small className="text-muted">
+            {msg.createdAt
+              ? new Date(msg.createdAt).toLocaleString()
+              : ""}
+          </small>
 
+        </div>
 
-              <p className="mb-0 mt-2">
+        <p className="mb-0 mt-2">
+          {msg.message}
+        </p>
 
-                {ticket.description}
-
-              </p>
-
-            </Card.Body>
-
-          </Card>
-
-
-
-          <Card className="mb-4">
-
-            <Card.Body>
-
-              <strong>
-                Support Agent
-              </strong>
-
-
-              <p className="text-muted mb-0 mt-2">
-
-                Your ticket has been received.
-                Our support team will review it shortly.
-
-              </p>
-
-            </Card.Body>
-
-          </Card>
-
+      </Card.Body>
+    </Card>
+  ))
+) : (
+  <p className="text-muted">
+    No messages yet.
+  </p>
+)}
 
 
           {/* MESSAGE FORM */}

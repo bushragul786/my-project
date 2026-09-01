@@ -65,7 +65,6 @@ export const getMyTickets = async (req, res) => {
   }
 };
 
-
 // ===============================
 // GET SINGLE TICKET
 // GET /api/tickets/:id
@@ -73,10 +72,11 @@ export const getMyTickets = async (req, res) => {
 
 export const getTicketById = async (req, res) => {
   try {
+
     const ticket = await Ticket.findOne({
       _id: req.params.id,
       customer: req.user._id,
-    });
+    }).populate("messages.sender", "username email role");
 
     if (!ticket) {
       return res.status(404).json({
@@ -91,13 +91,14 @@ export const getTicketById = async (req, res) => {
     });
 
   } catch (error) {
+
     res.status(500).json({
       success: false,
       message: error.message,
     });
+
   }
 };
-
 
 // ===============================
 // UPDATE TICKET

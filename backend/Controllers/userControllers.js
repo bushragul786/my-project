@@ -7,8 +7,13 @@ import jwt from "jsonwebtoken";
      
 export const signup = async (req, res) => {
   try {
-    const { username, email, password} = req.body;
+    console.log("🔥 FULL BODY:", req.body);
 
+    const { username, email, password, role } = req.body;
+
+    console.log("🔥 SIGNUP CONTROLLER HIT");
+    console.log("🔥 ROLE:", role);
+    
     const existingUser = await User.findOne({ email })
 
     if (existingUser) {
@@ -23,13 +28,15 @@ const hashedPassword = await bcrypt.hash(password,10);
 
 
 // new User
-
 const newUser = await User.create({
   username,
   email,
   password: hashedPassword,
-  role: "customer",
+  role: role,
 });
+
+console.log("ROLE RECEIVED:", role);
+console.log("ROLE SAVED:", newUser.role);
 
 
     res.status(201).json({
@@ -37,6 +44,7 @@ const newUser = await User.create({
       message: "User created successfully",
       data: newUser,
     });
+
  } catch (error) {
     res.status(500).json({
       success: false,

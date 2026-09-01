@@ -11,6 +11,7 @@ import EditTicket from "./Components/Pages/EditTicket";
 import AgentDashboard from "./Components/Pages/AgentDashboard";
 import AgentTicketDetails from "./Components/Pages/AgentTicketDetails";
 import { ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   return (
