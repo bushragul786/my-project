@@ -51,7 +51,7 @@ const AgentTicketDetail = () => {
         }
 
         const response = await axios.get(
-          `http://localhost:5000/api/tickets/agent/${id}`,
+           `https://my-project-7muh.onrender.com/api/tickets/agent/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -100,7 +100,7 @@ const AgentTicketDetail = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.post(
-        `http://localhost:5000/api/tickets/${id}/messages`,
+      `https://my-project-7muh.onrender.com/api/tickets/${id}/messages`,
         {
           message,
         },
@@ -152,7 +152,7 @@ const AgentTicketDetail = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.put(
-        `http://localhost:5000/api/tickets/agent/${id}`,
+       `https://my-project-7muh.onrender.com/api/tickets/agent/${id}`,
         {
           status,
           priority,

@@ -56,7 +56,7 @@ const TicketDetails = () => {
 
 
         const response = await axios.get(
-          `http://localhost:5000/api/tickets/${id}`,
+          `https://my-project-7muh.onrender.com/api/tickets/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -105,7 +105,7 @@ const handleSend = async (e) => {
     const token = localStorage.getItem("token");
 
     const response = await axios.post(
-      `http://localhost:5000/api/tickets/${id}/messages`,
+      `https://my-project-7muh.onrender.com/api/tickets/${id}/messages`,
       {
         message: message.trim(),
       },

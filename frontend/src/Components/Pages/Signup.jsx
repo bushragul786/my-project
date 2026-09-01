@@ -20,12 +20,12 @@ const Signup = () => {
 
   const signupHandler = async (e) => {
   e.preventDefault();
-  
+
       console.log("SIGNUP FORM:", form);
 
   try {
   const response = await axios.post(
-    "http://localhost:5000/api/users/signup",
+    "https://my-project-7muh.onrender.com/api/users/signup",
     form
   );
 

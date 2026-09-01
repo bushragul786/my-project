@@ -48,7 +48,7 @@ const CustomerDashboard = () => {
 
 
         const response = await axios.get(
-          "http://localhost:5000/api/tickets/my-tickets",
+          "https://my-project-7muh.onrender.com/api/tickets/my-tickets",
           {
             headers: {
               Authorization: `Bearer ${token}`,

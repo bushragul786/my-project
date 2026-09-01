@@ -36,7 +36,7 @@ const AgentDashboard = () => {
         }
 
         const response = await axios.get(
-          "http://localhost:5000/api/tickets/agent",
+           "https://my-project-7muh.onrender.com/api/tickets/agent",
           {
             headers: {
               Authorization: `Bearer ${token}`,

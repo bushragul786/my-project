@@ -35,7 +35,7 @@ const MyTickets = () => {
       }
 
       const response = await axios.get(
-        "http://localhost:5000/api/tickets/my-tickets",
+       "https://my-project-7muh.onrender.com/api/tickets/my-tickets",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -59,9 +59,9 @@ const MyTickets = () => {
 
 
   useEffect(() => {
-    fetchTickets();
-  }, []);
-
+  fetchTickets();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
 
   // =========================
   // DELETE TICKET
@@ -82,7 +82,7 @@ const MyTickets = () => {
       const token = localStorage.getItem("token");
 
       await axios.delete(
-        `http://localhost:5000/api/tickets/${id}`,
+        `https://my-project-7muh.onrender.com/api/tickets/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

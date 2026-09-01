@@ -39,7 +39,7 @@ const EditTicket = () => {
         }
 
         const response = await axios.get(
-          `http://localhost:5000/api/tickets/${id}`,
+          `https://my-project-7muh.onrender.com/api/tickets/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -82,7 +82,7 @@ const EditTicket = () => {
       const token = localStorage.getItem("token");
 
       await axios.put(
-        `http://localhost:5000/api/tickets/${id}`,
+        `https://my-project-7muh.onrender.com/api/tickets/${id}`,
         {
           subject,
           description,
